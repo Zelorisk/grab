@@ -1,13 +1,21 @@
-import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
-import { Link, Copy, Trash2, Eye, Globe, Plus, ExternalLink } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import axios from "axios";
+import {
+  Link,
+  Copy,
+  Trash2,
+  Eye,
+  Globe,
+  Plus,
+  ExternalLink,
+} from "lucide-react";
 
 function Dashboard() {
   const [links, setLinks] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [redirectUrl, setRedirectUrl] = useState('');
-  const [description, setDescription] = useState('');
+  const [redirectUrl, setRedirectUrl] = useState("");
+  const [description, setDescription] = useState("");
   const [copiedId, setCopiedId] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -17,52 +25,54 @@ function Dashboard() {
 
   const fetchLinks = async () => {
     try {
-      const response = await axios.get('/api/links');
+      const response = await axios.get("/api/links");
       setLinks(response.data);
     } catch (error) {
-      console.error('Error fetching links:', error);
+      console.error("Error fetching links:", error);
     }
   };
 
   const createLink = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-      const response = await axios.post('/api/create-link', {
+      const response = await axios.post("/api/create-link", {
         redirectUrl,
-        description
+        description,
       });
-      
-      setLinks([...links, {
-        ...response.data,
-        clicks: 0,
-        trackingCount: 0,
-        createdAt: new Date().toISOString()
-      }]);
-      
-      setRedirectUrl('');
-      setDescription('');
+
+      setLinks([
+        ...links,
+        {
+          ...response.data,
+          clicks: 0,
+          trackingCount: 0,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+
+      setRedirectUrl("");
+      setDescription("");
       setShowCreateForm(false);
-      
-      // Auto-copy the new link
+
       copyToClipboard(response.data.trackingLink, response.data.linkId);
     } catch (error) {
-      console.error('Error creating link:', error);
-      alert('Error creating link. Please try again.');
+      console.error("Error creating link:", error);
+      alert("Error creating link. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const deleteLink = async (linkId) => {
-    if (!confirm('Are you sure you want to delete this link?')) return;
-    
+    if (!confirm("Are you sure you want to delete this link?")) return;
+
     try {
       await axios.delete(`/api/links/${linkId}`);
-      setLinks(links.filter(link => link.id !== linkId));
+      setLinks(links.filter((link) => link.id !== linkId));
     } catch (error) {
-      console.error('Error deleting link:', error);
+      console.error("Error deleting link:", error);
     }
   };
 
@@ -85,7 +95,9 @@ function Dashboard() {
             <Globe className="w-10 h-10 text-purple-400" />
             <h1 className="text-4xl font-bold text-white">IP Tracker</h1>
           </div>
-          <p className="text-gray-300">Create tracking links and monitor IP addresses with geolocation data</p>
+          <p className="text-gray-300">
+            Create tracking links and monitor IP addresses with geolocation data
+          </p>
         </div>
 
         {/* Create Link Button */}
@@ -102,7 +114,9 @@ function Dashboard() {
         {/* Create Form */}
         {showCreateForm && (
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 mb-6 border border-white/20">
-            <h2 className="text-2xl font-bold text-white mb-4">Create Tracking Link</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">
+              Create Tracking Link
+            </h2>
             <form onSubmit={createLink} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-2">
@@ -116,9 +130,11 @@ function Dashboard() {
                   required
                   className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
-                <p className="text-xs text-gray-400 mt-1">The URL where visitors will be redirected</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  The URL where visitors will be redirected
+                </p>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-2">
                   Description (Optional)
@@ -138,7 +154,7 @@ function Dashboard() {
                   disabled={loading}
                   className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors disabled:opacity-50"
                 >
-                  {loading ? 'Creating...' : 'Create Link'}
+                  {loading ? "Creating..." : "Create Link"}
                 </button>
                 <button
                   type="button"
@@ -157,8 +173,12 @@ function Dashboard() {
           {links.length === 0 ? (
             <div className="bg-white/10 backdrop-blur-lg rounded-xl p-12 text-center border border-white/20">
               <Link className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">No tracking links yet</h3>
-              <p className="text-gray-300">Create your first tracking link to get started</p>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No tracking links yet
+              </h3>
+              <p className="text-gray-300">
+                Create your first tracking link to get started
+              </p>
             </div>
           ) : (
             links.map((link) => (
@@ -171,22 +191,31 @@ function Dashboard() {
                     <div className="flex items-center gap-2 mb-2">
                       <Link className="w-5 h-5 text-purple-400" />
                       <h3 className="text-lg font-semibold text-white">
-                        {link.description || 'Untitled Link'}
+                        {link.description || "Untitled Link"}
                       </h3>
                     </div>
                     <div className="space-y-1 text-sm">
                       <div className="flex items-center gap-2">
                         <span className="text-gray-400">Tracking Link:</span>
                         <code className="bg-black/30 px-2 py-1 rounded text-purple-300">
-                          {link.trackingLink || `http://localhost:3001/t/${link.id}`}
+                          {link.trackingLink ||
+                            `http://localhost:3001/t/${link.id}`}
                         </code>
                         <button
-                          onClick={() => copyToClipboard(link.trackingLink || `http://localhost:3001/t/${link.id}`, link.id)}
+                          onClick={() =>
+                            copyToClipboard(
+                              link.trackingLink ||
+                                `http://localhost:3001/t/${link.id}`,
+                              link.id,
+                            )
+                          }
                           className="text-purple-400 hover:text-purple-300 transition-colors"
                           title="Copy link"
                         >
                           {copiedId === link.id ? (
-                            <span className="text-green-400 text-xs">Copied!</span>
+                            <span className="text-green-400 text-xs">
+                              Copied!
+                            </span>
                           ) : (
                             <Copy className="w-4 h-4" />
                           )}
@@ -206,7 +235,7 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <RouterLink
                       to={`/tracking/${link.id}`}
@@ -227,15 +256,21 @@ function Dashboard() {
                 <div className="flex gap-6 text-sm border-t border-white/10 pt-4">
                   <div>
                     <span className="text-gray-400">Clicks:</span>
-                    <span className="ml-2 text-white font-semibold">{link.clicks || 0}</span>
+                    <span className="ml-2 text-white font-semibold">
+                      {link.clicks || 0}
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-400">Tracked IPs:</span>
-                    <span className="ml-2 text-white font-semibold">{link.trackingCount || 0}</span>
+                    <span className="ml-2 text-white font-semibold">
+                      {link.trackingCount || 0}
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-400">Created:</span>
-                    <span className="ml-2 text-white">{formatDate(link.createdAt)}</span>
+                    <span className="ml-2 text-white">
+                      {formatDate(link.createdAt)}
+                    </span>
                   </div>
                 </div>
               </div>
